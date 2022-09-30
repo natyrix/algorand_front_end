@@ -7,3 +7,122 @@ input, select {
     border-radius: 4px;
     box-sizing: border-box;
 }
+ select {
+    width: 60%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.logoutbtn{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #e44906;
+    color: white;
+    padding: 5px 5px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 33;
+
+}
+
+.loading{
+    position: absolute;
+    top: 35%;
+    left: 35%;
+    z-index: 55;
+
+}
+
+input[type=button] {
+    width: 15%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=button]:hover {
+    background-color: #45a049;
+}
+
+.home-div{
+    position: relative;
+}
+
+
+.modal {
+    font-size: 12px;
+    margin: 21px;
+    background-color: rgb(221, 224, 221);
+    padding: 28px;
+    border-radius: 4%;
+  }
+  .modal > .header {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    font-size: 18px;
+    text-align: center;
+    padding: 5px;
+  }
+  .modal > .content {
+    width: 100%;
+    padding: 10px 5px;
+  }
+  .modal > .actions {
+    width: 100%;
+    padding: 10px 5px;
+    margin: auto;
+    text-align: center;
+  }
+  .modal > .close {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    padding: 2px 5px;
+    line-height: 20px;
+    right: -10px;
+    top: -10px;
+    font-size: 24px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #cfcece;
+  }
+
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    }
+    
+    li {
+    float: left;
+    }
+    
+    li button {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    }
+    
+    li button:hover {
+    background-color: #111;
+    }
+    
