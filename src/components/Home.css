@@ -16,7 +16,12 @@ input, select {
     border-radius: 4px;
     box-sizing: border-box;
 }
-
+.request_list{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 4px;
+}
 .logoutbtn{
     position: absolute;
     top: 0;
@@ -38,6 +43,17 @@ input, select {
     left: 35%;
     z-index: 55;
 
+}
+
+.btn{
+  width: 15%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 0px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 input[type=button] {

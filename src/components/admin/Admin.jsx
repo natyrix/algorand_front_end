@@ -3,21 +3,84 @@ import React, {useState, useEffect} from 'react'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { create } from 'ipfs-http-client'
+import Popup from 'reactjs-popup';
+import axios from 'axios'
 import { Algodv2, makeAssetCreateTxnWithSuggestedParamsFromObject } from 'algosdk';
 import  loading from '../../loading2.gif'
 import MyAlgoConnect from '@randlabs/myalgo-connect';
+import RequestsList from './RequestsList';
 
 // import {Buffer} from 'buffer';
 // Buffer.from('anything','base64');
 window.Buffer = window.Buffer || require("buffer").Buffer; 
+
+const BASE_URL = "http://127.0.0.1:8000/api"
+const IMAGE_BASE_URL = "http://127.0.0.1:8000"
+
 
 export default function Admin({address}) {
     const [isLoading, setIsLoading] = useState(false)
     const [recieverAddress, setRecieverAddress] = useState('')
     const [assetName, setAssetName] = useState('')
     const [unitName, setUnitName] = useState('')
+    const [accounts, setAccounts] = useState([])
     const [note, setNote] = useState('')
     const [file, setFile] = useState(null);
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [open, setOpen] = useState(false);
+    const closeModal = () => setOpen(false);
+
+    function firstNameOnChange(e){
+        setFirstName(e.target.value)
+    }
+    function lastNameOnChange(e){
+        setLastName(e.target.value)
+    }
+
+    useEffect(()=>{
+        setIsLoading(true)
+        getAccounts()
+        setIsLoading(false)
+      },[])
+
+    async function getAccounts(){
+        await AlgoSigner.connect({
+            ledger: 'TestNet'
+          });
+        const accts = await AlgoSigner.accounts({
+            ledger: 'TestNet'
+          });
+        let fetchedAccounts = accts
+        // console.log(fetchedAccounts)
+        // console.log(fetchedAccounts.length)
+        let ac = []
+        for(let i=0;i<fetchedAccounts.length;i++){
+            ac.push(fetchedAccounts[i].address)
+            // console.log(fetchedAccounts[i].address)
+        }
+        // console.log(ac)
+        setAccounts([])
+        setAccounts(ac)
+        setRecieverAddress(ac[0])
+    }
+
+    const Dropdown = ({ label, value, options, onChange })=>{
+        return (
+            <>
+              <p>{label}</p>
+              <select value={value} onChange={onChange}>
+                {options.map((option) => (
+                  <option value={option} key={option}>{option}</option>
+                ))}
+              </select>
+            </>
+          );
+    }
+
+    const handleChange = (event) => {
+        setRecieverAddress(event.target.value);
+    };
 
     function recieverAddressOnChange(e){
         setRecieverAddress(e.target.value)
@@ -32,9 +95,153 @@ export default function Admin({address}) {
         setNote(e.target.value)
     }
 
-    async function mint(e){
+    async function update_asset_index(id, asset_index){
+        try{
+            let response = await axios.post(`${BASE_URL}/set_asset_index`, {
+                'asset_id': id,
+                'asset_index': asset_index
+            })
+            console.log(response.data)
+            let data = response.data;
+            if(data!==undefined){
+                if(data.success){
+                    alert("Asset created")
+                }else{
+                    alert(data.message)
+                }
+            }
+            else{
+                alert("Something went wrong")
+            }
+        }
+        catch(e){
+            console.log(e)
+            alert(e.message)
+        }
+    }
+
+    async function upload_file_and_save(assetID){
+        if(assetID !== undefined){
+            let formData = new FormData();
+            formData.append('file', file)
+            formData.append('address', recieverAddress)
+            formData.append('asset_id', 'assetID')
+            try{
+                // let res = await fetch(`${BASE_URL}/file_upload_and_save_asset`, {
+                //     method: 'POST',
+                //     headers: {
+                //         Accept: 'application/json, text/plain, */*'
+                //     },
+                //     body:formData,
+                // })
+                let res = await axios.post(`${BASE_URL}/file_upload_and_save_asset`, formData);
+                console.log(res)
+                let data = res.data;
+
+                if(data!==undefined){
+                    if(data.success){
+                        // update_asset_index(data.asset.id, 123)
+                        await mint(data.asset.id,`${IMAGE_BASE_URL}${data.asset.image_url}`)
+                    }else{
+                        alert(data.message)
+                    }
+                }
+                else{
+                    alert("Something went wrong")
+                }
+
+            }catch(e){
+                console.log(e)
+                alert(e.message)
+            }
+        }
+        else{
+            alert("Asset ID required")
+        }
+    }
+
+    async function check_account(e){
         e.preventDefault()
-        if(recieverAddress.length !==0 && assetName.length !==0  && unitName.length !==0  && note.length !==0 ){
+        setIsLoading(true)
+        console.log(recieverAddress)
+        try{
+            let response = await axios.post(`${BASE_URL}/check_account`, {
+                'address': recieverAddress
+            })
+            console.log(response.data)
+            let data = response.data;
+            if(data!==undefined){
+                if(data.success){
+                    console.log("REGISTERED")
+                    await upload_file_and_save(e);
+                }
+                else{
+                    if(data.status_code!==undefined){
+                        if(data.status_code === 111){
+                            console.log("REGISTER")
+                            setOpen(o => !o)
+                        }
+                    }
+                    else{
+                        alert(data.message)
+                    }
+                }
+            }else{
+                alert("Something went wrong")
+            }
+        }
+        catch(e){
+            alert(e.message)
+        }
+        finally{
+            setIsLoading(false)
+        }
+    }
+
+    async function registerButtonClicked(e){
+        e.preventDefault()
+        console.log("Registering")
+        console.log(firstName)
+        console.log(lastName)
+
+        if(firstName.length !== 0 && lastName.length!==0){
+            try{
+                setIsLoading(true)
+                let response = await axios.post(`${BASE_URL}/create_account`, {
+                    'address': recieverAddress,
+                    'first_name': firstName,
+                    'last_name': lastName
+                })
+                console.log(response.data)
+                
+                let data = response.data;
+                if(data!==undefined){
+                    if(data.success){
+                        upload_file_and_save(e)
+                    }
+                    else{
+                        alert(data.message)
+                    }
+                }else{
+                    alert("Something went wrong")
+                }
+            }
+            catch(e){
+                alert(e.message)
+            }
+            finally{
+                setIsLoading(false)
+            }
+        }
+        else{
+            alert("All fields are required.")
+        }
+    }
+
+
+
+    async function mint(created_id, url){
+        if(recieverAddress.length !==0 && assetName.length !==0  && unitName.length !==0  && note.length !==0 && file!==null){
             try{
                 setIsLoading(true)
                 const server = 'https://testnet-algorand.api.purestake.io/ps2'
@@ -53,7 +260,7 @@ export default function Admin({address}) {
                     unitName: unitName,
                     total: 1,
                     decimals: 0,
-                    assetURL: "https:google.com",
+                    assetURL: url,
                     note: AlgoSigner.encoding.stringToByteArray(note),
                     suggestedParams: {...txParamsJS}
                 })
@@ -90,7 +297,8 @@ export default function Admin({address}) {
                 let txInfo = await waitForConfirmation( algodClient, tx.txId)
                 console.log("TX INFO")
                 console.log(txInfo)
-                
+
+
             }catch(e){
                 console.log(e)
                 alert(e.message)
@@ -98,21 +306,9 @@ export default function Admin({address}) {
                 setIsLoading(false)
             }
         }else{
-            alert("Address required")
+            alert("All Fields are required")
         }
     }
-
-    // async function waitForConfirmation(txId, client){
-    //     const status = await client.status().do();
-    //     let lastRound = status["last-round"];
-    //     let pendingInfo = await client.pendingTransactionInformation(txId).do();
-    //     while (pendingInfo["confirmed-round"] !== null && pendingInfo["confirmed-round"] > 0){
-    //         lastRound++;
-    //         await client.statusAfterBlock(lastRound).do();
-    //         pendingInfo = await client.pendingTransactionInformation(txId).do();
-    //     }
-    //     return pendingInfo;
-    // }
 
     const waitForConfirmation = async function (algodclient, txId) {
         let response = await algodclient.status().do();
@@ -132,12 +328,13 @@ export default function Admin({address}) {
 
 
     const retrieveFile = (e) => {
-        const data = e.target.files[0];
-        const reader = new window.FileReader();
-        reader.readAsArrayBuffer(data);
-        reader.onloadend = () => {
-            setFile(Buffer(reader.result));
-        }
+        // const data = e.target.files[0];
+        // const reader = new window.FileReader();
+        // reader.readAsArrayBuffer(data);
+        // reader.onloadend = () => {
+        //     setFile(Buffer(reader.result));
+        // }
+        setFile(e.target.files[0])
         e.preventDefault();  
       }
 
@@ -157,17 +354,42 @@ export default function Admin({address}) {
             <TabPanel>
                 <h2>Mint</h2>
                 <form action="">
-                    <input type="text" value={recieverAddress} onChange={recieverAddressOnChange} placeholder='Reciever Address:' required/>
+                    {accounts.length > 0 ? (
+                        <>
+                            <Dropdown label="Select accout" value={recieverAddress} onChange={handleChange} options={accounts}/>
+                            <br />
+                        </>
+                    ):
+                    <input type="text" value={recieverAddress} onChange={recieverAddressOnChange} placeholder='Reciever Address:' required/>}
+                    
                     <input type="text" value={assetName} onChange={assetNameOnChange} placeholder='Asset Name:' required/>
                     <input type="text" value={unitName} onChange={unitNameOnChange} placeholder='Unit Name:' required/>
                     <input type="text" value={note} onChange={noteOnChange} placeholder='Note:' required/>
                     <input type="file" name="data" onChange={retrieveFile} />
 
-                    <input type="button" onClick={mint} value="Mint"></input>
+                    <input type="button" onClick={check_account} value="Mint"></input>
                 </form>
+                <Popup open={open} closeOnDocumentClick onClose={closeModal}>
+                    <div className="modal">
+                        <a className="close" onClick={closeModal}>
+                            &times;
+                        </a>
+                        {/* <label>
+                            Name:
+                        </label> */}
+                        <div className="header"> user not found, register </div>
+                        <div className="content">
+                            <input type="text" value={firstName} onChange={firstNameOnChange} placeholder='First Name:'/>
+                            <input type="text" value={lastName} onChange={lastNameOnChange} placeholder='Last Name:'/>    
+                            <input type="button" onClick={registerButtonClicked} value="Register"></input>
+                        </div>
+                    </div>
+                </Popup>
+
             </TabPanel>
             <TabPanel>
                 <h2>Requests</h2>
+                <RequestsList address={address}/>
             </TabPanel>
             <TabPanel>
                 <h2>NFTs</h2>
