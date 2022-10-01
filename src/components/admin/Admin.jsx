@@ -9,6 +9,7 @@ import { Algodv2, makeAssetCreateTxnWithSuggestedParamsFromObject } from 'algosd
 import  loading from '../../loading2.gif'
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import RequestsList from './RequestsList';
+import NFTs from './NFTs';
 
 // import {Buffer} from 'buffer';
 // Buffer.from('anything','base64');
@@ -393,6 +394,7 @@ export default function Admin({address}) {
             </TabPanel>
             <TabPanel>
                 <h2>NFTs</h2>
+                <NFTs address={address}/>
             </TabPanel>
         </Tabs>
     </div>

@@ -75,6 +75,32 @@ input[type=button]:hover {
     position: relative;
 }
 
+.asset_list{
+  display: flex;
+  flex-wrap: wrap;
+
+}
+.asset{
+  background-color: #cfcece;
+  border-radius: 7%;
+  width: 280px;
+  height: 350px;
+  padding: 5px 5px;
+  margin: 5px 6px;
+}
+.asset img{
+  height: 60%;
+  width: 100%;
+}
+.asset_content{
+  padding: 5px 5px;
+}
+
+.opt{
+  display: flex;
+  height: 10%;
+  justify-content: start;
+}
 
 .modal {
     font-size: 12px;
