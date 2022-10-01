@@ -9,7 +9,7 @@ import Trainee from './trainee/Trainee';
 import Admin from './admin/Admin';
 
 
-const BASE_URL = "http://127.0.0.1:8000/api"
+const BASE_URL = "https://algorand-endpoint.herokuapp.com/api"
 
 
 

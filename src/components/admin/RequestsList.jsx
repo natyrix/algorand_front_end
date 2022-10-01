@@ -6,8 +6,8 @@ import axios from 'axios'
 import { Algodv2, makeAssetCreateTxnWithSuggestedParamsFromObject } from 'algosdk';
 
 
-const BASE_URL = "http://127.0.0.1:8000/api"
-const IMAGE_BASE_URL = "http://127.0.0.1:8000"
+const BASE_URL = "https://algorand-endpoint.herokuapp.com/api"
+const IMAGE_BASE_URL = "https://algorand-endpoint.herokuapp.com"
 
 
 function RequestsList({address}) {
