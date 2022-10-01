@@ -108,6 +108,31 @@ function RequestsList({address}) {
         }
     }
 
+    async function update_asset_index(id, asset_index){
+        try{
+            let response = await axios.post(`${BASE_URL}/set_asset_index`, {
+                'asset_id': id,
+                'asset_index': asset_index
+            })
+            console.log(response.data)
+            let data = response.data;
+            if(data!==undefined){
+                if(data.success){
+                    alert("Asset created")
+                }else{
+                    alert(data.message)
+                }
+            }
+            else{
+                alert("Something went wrong")
+            }
+        }
+        catch(e){
+            console.log(e)
+            alert(e.message)
+        }
+    }
+
     async function mint(created_id, url){
         if(assetName.length !==0  && unitName.length !==0  && note.length !==0 && file!==null){
             try{
@@ -128,7 +153,8 @@ function RequestsList({address}) {
                     unitName: unitName,
                     total: 1,
                     decimals: 0,
-                    assetURL: url,
+                    // assetURL: url,
+                    assetURL: "http://google.com",
                     note: AlgoSigner.encoding.stringToByteArray(note),
                     suggestedParams: {...txParamsJS}
                 })
@@ -165,6 +191,10 @@ function RequestsList({address}) {
                 let txInfo = await waitForConfirmation( algodClient, tx.txId)
                 console.log("TX INFO")
                 console.log(txInfo)
+
+                if(txInfo['asset-index']!==undefined){
+                    update_asset_index(created_id, txInfo['asset-index'])
+                }
 
 
             }catch(e){

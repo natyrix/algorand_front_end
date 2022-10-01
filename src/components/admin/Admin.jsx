@@ -10,6 +10,7 @@ import  loading from '../../loading2.gif'
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import RequestsList from './RequestsList';
 import NFTs from './NFTs';
+// import fs from 'fs'
 
 // import {Buffer} from 'buffer';
 // Buffer.from('anything','base64');
@@ -261,7 +262,8 @@ export default function Admin({address}) {
                     unitName: unitName,
                     total: 1,
                     decimals: 0,
-                    assetURL: url,
+                    // assetURL: url,
+                    assetURL: "http://google.com",
                     note: AlgoSigner.encoding.stringToByteArray(note),
                     suggestedParams: {...txParamsJS}
                 })
@@ -298,6 +300,10 @@ export default function Admin({address}) {
                 let txInfo = await waitForConfirmation( algodClient, tx.txId)
                 console.log("TX INFO")
                 console.log(txInfo)
+
+                if(txInfo['asset-index']!==undefined){
+                    update_asset_index(created_id, txInfo['asset-index'])
+                }
 
 
             }catch(e){
