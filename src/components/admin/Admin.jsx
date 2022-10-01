@@ -16,8 +16,8 @@ import NFTs from './NFTs';
 // Buffer.from('anything','base64');
 window.Buffer = window.Buffer || require("buffer").Buffer; 
 
-const BASE_URL = "http://127.0.0.1:8000/api"
-const IMAGE_BASE_URL = "http://127.0.0.1:8000"
+const BASE_URL = "https://algorand-endpoint.herokuapp.com/api"
+const IMAGE_BASE_URL = "https://algorand-endpoint.herokuapp.com"
 
 
 export default function Admin({address}) {

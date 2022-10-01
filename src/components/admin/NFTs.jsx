@@ -2,8 +2,8 @@ import React,{useEffect, useState} from 'react'
 import axios from 'axios'
 import  loading from '../../loading2.gif'
 
-const BASE_URL = "http://127.0.0.1:8000/api"
-const IMAGE_BASE_URL = "http://127.0.0.1:8000"
+const BASE_URL = "https://algorand-endpoint.herokuapp.com/api"
+const IMAGE_BASE_URL = "https://algorand-endpoint.herokuapp.com"
 
 export default function NFTs({address}) {
     const [isLoading, setIsLoading] = useState(false)
