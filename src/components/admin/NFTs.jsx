@@ -2,6 +2,7 @@ import React,{useEffect, useState} from 'react'
 import axios from 'axios'
 import  loading from '../../loading2.gif'
 
+// const BASE_URL = "http://127.0.0.1:8000/api"
 const BASE_URL = "https://algorand-endpoint.herokuapp.com/api"
 const IMAGE_BASE_URL = "https://algorand-endpoint.herokuapp.com"
 
@@ -55,7 +56,10 @@ export default function NFTs({address}) {
                             <h5 className='asset_content'>{asset.account.first_name} {asset.account.last_name}</h5>
                             <img src={asset.image_url}></img>
                             {/* <img src={loading}></img> */}
-                            <p className='asset_content'>#{asset.asset_index}</p>
+                            <div className="" style={{display:'flex', justifyContent:'space-between'}}>
+                                <p className='asset_content'>{asset.asset_name}(#{asset.asset_index})</p>
+                                <a href={asset.ipfs_url} target="_blank">IPFSURL</a>
+                            </div>
                             {/* <div className="opt">
                                 <input type="checkbox" id="vehicle3" name="vehicle3" value={asset.asset_status}/>
                                 <p className='asset_content'>Opt-in:</p>

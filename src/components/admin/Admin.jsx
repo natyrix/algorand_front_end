@@ -10,12 +10,15 @@ import  loading from '../../loading2.gif'
 import MyAlgoConnect from '@randlabs/myalgo-connect';
 import RequestsList from './RequestsList';
 import NFTs from './NFTs';
+import minimist from 'minimist'
+import { Web3Storage, getFilesFromPath } from 'web3.storage'
 // import fs from 'fs'
 
 // import {Buffer} from 'buffer';
 // Buffer.from('anything','base64');
 window.Buffer = window.Buffer || require("buffer").Buffer; 
 
+// const BASE_URL = "http://127.0.0.1:8000/api"
 const BASE_URL = "https://algorand-endpoint.herokuapp.com/api"
 const IMAGE_BASE_URL = "https://algorand-endpoint.herokuapp.com"
 
@@ -97,11 +100,13 @@ export default function Admin({address}) {
         setNote(e.target.value)
     }
 
-    async function update_asset_index(id, asset_index){
+    async function update_asset_index(id, asset_index, ipfs_url, asset_name){
         try{
             let response = await axios.post(`${BASE_URL}/set_asset_index`, {
                 'asset_id': id,
-                'asset_index': asset_index
+                'asset_index': asset_index,
+                'ipfs_url': ipfs_url,
+                'asset_name': asset_name
             })
             console.log(response.data)
             let data = response.data;
@@ -143,7 +148,9 @@ export default function Admin({address}) {
                 if(data!==undefined){
                     if(data.success){
                         // update_asset_index(data.asset.id, 123)
-                        await mint(data.asset.id,`${IMAGE_BASE_URL}${data.asset.image_url}`)
+                        // await upload_to_web3(data.asset.id)
+                        await upload_to_web3_2(data.asset.id)
+                        
                     }else{
                         alert(data.message)
                     }
@@ -160,6 +167,28 @@ export default function Admin({address}) {
         else{
             alert("Asset ID required")
         }
+    }
+
+    async function upload_to_web3_2(asset_id){
+        let formData = new FormData();
+        formData.append('file', file)
+        formData.append('pinataOptions', '{"cidVersion": 1}');
+        formData.append('pinataMetadata', '{"name": "MyFile", "keyvalues": {"company": "10Academy"}}');
+
+        let config = {
+            method: 'post',
+            url: 'https://api.pinata.cloud/pinning/pinFileToIPFS',
+            headers: { 
+              'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiI5NWM0ZTYzYy02MmI3LTRhNjItODMzMi04NjBlNjk1MjE3MDQiLCJlbWFpbCI6Im5hdHJpeDI3N0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZGIxNzU2NGQ4YjQ0NGZkMzhjMzEiLCJzY29wZWRLZXlTZWNyZXQiOiJhM2M2YmJiMWNhMTQ4Yjc5YWRiMzkzMzM3ZTAzMGIyZDFhMjA4ZTNkYjBlYTdlYjFkZWEwNTNjMGEyM2Q5MTkyIiwiaWF0IjoxNjY0NjU3OTc0fQ.1PHbVa82Uf4BWevHaqVXv2gNYYhdZs3Nwi6IyPTd_1k', 
+            //   ...formData.getHeaders()
+            },
+            data : formData
+          };
+
+        const res = await axios(config);
+        console.log(res.data);
+        let img_url = `https://gateway.pinata.cloud/ipfs/${res.data.IpfsHash}`
+        await mint(asset_id,img_url)
     }
 
     async function check_account(e){
@@ -262,8 +291,8 @@ export default function Admin({address}) {
                     unitName: unitName,
                     total: 1,
                     decimals: 0,
-                    // assetURL: url,
-                    assetURL: "http://google.com",
+                    assetURL: url,
+                    // assetURL: "http://google.com",
                     note: AlgoSigner.encoding.stringToByteArray(note),
                     suggestedParams: {...txParamsJS}
                 })
@@ -302,7 +331,7 @@ export default function Admin({address}) {
                 console.log(txInfo)
 
                 if(txInfo['asset-index']!==undefined){
-                    update_asset_index(created_id, txInfo['asset-index'])
+                    await update_asset_index(created_id, txInfo['asset-index'], url, assetName)
                 }
 
 

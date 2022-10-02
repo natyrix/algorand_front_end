@@ -8,7 +8,7 @@ import Popup from 'reactjs-popup';
 import Trainee from './trainee/Trainee';
 import Admin from './admin/Admin';
 
-
+// const BASE_URL = "http://127.0.0.1:8000/api"
 const BASE_URL = "https://algorand-endpoint.herokuapp.com/api"
 
 
@@ -25,6 +25,12 @@ function Home() {
 
     const [open, setOpen] = useState(false);
     const closeModal = () => setOpen(false);
+
+    const [isAdminChecked, setIsAdminChecked] = useState(false);
+
+    const handleCheckOnChange = () => {
+        setIsAdminChecked(!isAdminChecked);
+      };
 
     const [firstName, setFirstName] = useState("")
     const [lastName, setLastName] = useState("")
@@ -136,7 +142,8 @@ function Home() {
                 let response = await axios.post(`${BASE_URL}/create_account`, {
                     'address': selectedAccount,
                     'first_name': firstName,
-                    'last_name': lastName
+                    'last_name': lastName,
+                    'is_admin':isAdminChecked
                 })
                 console.log(response.data)
                 
@@ -144,7 +151,12 @@ function Home() {
                 if(data!==undefined){
                     if(data.success){
                         setOpen(false)
-                        setIsTrainee(true)
+                        if(data.account.is_admin){
+                            setIsAdmin(true)
+                        }
+                        else{
+                            setIsTrainee(true)
+                        }
                     }
                     else{
                         alert(data.message)
@@ -165,6 +177,29 @@ function Home() {
         }
     }
 
+    async function create_asset_request(){
+        try{
+            setIsLoading(true)
+            let response = await axios.post(`${BASE_URL}/create_trainee_request`, {
+                'address': selectedAccount
+            })
+            console.log(response.data)
+            
+            let data = response.data;
+            if(data!==undefined){
+                alert(data.message)
+            }else{
+                alert("Something went wrong")
+            }
+        }
+        catch(e){
+            alert(e.message)
+        }
+        finally{
+            setIsLoading(false)
+        }
+    }
+
     function logout(){
         setIsAdmin(false)
         setIsTrainee(false)
@@ -174,6 +209,7 @@ function Home() {
         return (
             <div className="home-div">
                 <button onClick={logout} className='logoutbtn'>Logout</button>
+                <button onClick={create_asset_request} className='btn'>Request Asset</button>
                 <Trainee address={selectedAccount}/>
             </div>
         )
@@ -211,7 +247,19 @@ function Home() {
                             Name:
                         </label> */}
                         <div className="header"> New user registeration </div>
+                        
                         <div className="content">
+                            <div className="" style={{display:'flex', width:'20px', justifyContent:'center', alignItems:'center'}}>
+                                <p>Admin?...</p>
+                                <input
+                                    type="checkbox"
+                                    id="topping"
+                                    name="topping"
+                                    value="Paneer"
+                                    checked={isAdminChecked}
+                                    onChange={handleCheckOnChange}
+                                    />
+                            </div>      
                             <input type="text" value={firstName} onChange={firstNameOnChange} placeholder='First Name:'/>
                             <input type="text" value={lastName} onChange={lastNameOnChange} placeholder='Last Name:'/>    
                             <input type="button" onClick={registerButtonClicked} value="Register"></input>
