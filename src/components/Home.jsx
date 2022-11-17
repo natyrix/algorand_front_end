@@ -68,6 +68,9 @@ function Home() {
         setAccounts([])
         setAccounts(ac)
         setSetselectedAccount(ac[0])
+        if(ac.length===0){
+            alert("No accounts found, please check if you installed Algosigner extension properly.")
+        }
     }
 
     const Dropdown = ({ label, value, options, onChange })=>{
