@@ -44,9 +44,9 @@ function Home() {
 
 
     useEffect(()=>{
-        setIsLoading(true)
-        getAccounts()
-        setIsLoading(false)
+        // setIsLoading(true)
+        // getAccounts()
+        // setIsLoading(false)
       },[])
 
     async function getAccounts(){
@@ -248,6 +248,9 @@ function Home() {
                         <input type="button" onClick={nextButtonClicked} value="Next>>"></input>
                     </>
                 )}
+                {
+                    accounts.length === 0 && <input type="button" onClick={getAccounts} value="Connect to Alogsigner>>"></input>
+                }
                 <Popup open={open} closeOnDocumentClick onClose={closeModal}>
                     <div className="modal">
                         <a className="close" onClick={closeModal}>
