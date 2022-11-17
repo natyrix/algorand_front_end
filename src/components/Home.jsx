@@ -251,7 +251,7 @@ function Home() {
                 {
                     accounts.length === 0 && <>
                         <div style={{display: "flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
-                            <h5>
+                            <h5 style={{fontSize:'1.5rem'}}>
                                 Welcome
                             </h5>
                             <p>
