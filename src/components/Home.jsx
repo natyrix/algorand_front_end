@@ -50,26 +50,33 @@ function Home() {
       },[])
 
     async function getAccounts(){
-        await AlgoSigner.connect({
-            ledger: 'TestNet'
-          });
-        const accts = await AlgoSigner.accounts({
-            ledger: 'TestNet'
-          });
-        let fetchedAccounts = accts
-        // console.log(fetchedAccounts)
-        // console.log(fetchedAccounts.length)
-        let ac = []
-        for(let i=0;i<fetchedAccounts.length;i++){
-            ac.push(fetchedAccounts[i].address)
-            // console.log(fetchedAccounts[i].address)
+        try{
+            await AlgoSigner.connect({
+                ledger: 'TestNet'
+            });
+            const accts = await AlgoSigner.accounts({
+                ledger: 'TestNet'
+            });
+            let fetchedAccounts = accts
+            // console.log(fetchedAccounts)
+            // console.log(fetchedAccounts.length)
+            let ac = []
+            for(let i=0;i<fetchedAccounts.length;i++){
+                ac.push(fetchedAccounts[i].address)
+                // console.log(fetchedAccounts[i].address)
+            }
+            // console.log(ac)
+            setAccounts([])
+            setAccounts(ac)
+            setSetselectedAccount(ac[0])
+            if(ac.length===0){
+                alert("No accounts found, please check if you installed Algosigner extension properly.")
+            }
         }
-        // console.log(ac)
-        setAccounts([])
-        setAccounts(ac)
-        setSetselectedAccount(ac[0])
-        if(ac.length===0){
-            alert("No accounts found, please check if you installed Algosigner extension properly.")
+        catch(e){
+            console.error(e.message)
+            
+            alert("Algosigner extension required to proceed")
         }
     }
 
