@@ -249,7 +249,21 @@ function Home() {
                     </>
                 )}
                 {
-                    accounts.length === 0 && <input type="button" onClick={getAccounts} value="Connect to Alogsigner>>"></input>
+                    accounts.length === 0 && <>
+                        <div style={{display: "flex",alignItems:"center",justifyContent:"center",flexDirection:"column"}}>
+                            <h5>
+                                Welcome
+                            </h5>
+                            <p>
+                            End-to-end Web3 dapps on the Algorand Blockchain that will help 10 Academy generate and distribute Non-Fungible Tokens (NFTs) as certificates that will represent the successful completion of a weekly challenge to trainees, and allow trainees with NFTs to interact with a smart contract to perform pre-defined actions.
+                            </p>
+                            <p>
+                                Please click the button below to continue.
+                            </p>
+                        </div>
+                        <input type="button" onClick={getAccounts} value="Connect to Alogsigner>>"></input>
+                        
+                    </>
                 }
                 <Popup open={open} closeOnDocumentClick onClose={closeModal}>
                     <div className="modal">
